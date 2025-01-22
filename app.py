@@ -5,12 +5,24 @@ from io import BytesIO
 
 def upscale_to_4k(image):
     # Define the resolution for 4K
-    target_resolution = (3840, 2160)
-    return image.resize(target_resolution, Image.LANCZOS)
+    target_width = 3840
+    target_height = 2160
+    original_width, original_height = image.size
+
+    # Calculate new dimensions while maintaining aspect ratio
+    aspect_ratio = original_width / original_height
+    if aspect_ratio > 1:  # Landscape
+        new_width = target_width
+        new_height = int(target_width / aspect_ratio)
+    else:  # Portrait or square
+        new_height = target_height
+        new_width = int(target_height * aspect_ratio)
+
+    return image.resize((new_width, new_height), Image.LANCZOS)
 
 def main():
     st.title("Batch Image Upscaling to 4K")
-    st.write("Upload up to 20 images, and this app will upscale each to 4K resolution.")
+    st.write("Upload up to 20 images, and this app will upscale each to 4K resolution without distortion.")
 
     # Upload multiple images
     uploaded_files = st.file_uploader(
